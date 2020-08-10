@@ -10,6 +10,7 @@ npm install
 npm start
 ```
 A window should open with the app running
+![minergui](minergui.png)
 ## API
 Api requests are documented as follows. Under each METHOD are the endpoint and expected values that are returned or should be provided.
 ### GET
