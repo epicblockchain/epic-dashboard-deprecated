@@ -1,7 +1,8 @@
 # How to Get Started
 Please read COPYING and EULA before proceeding
 ## Getting started from a binary
-Download the appropriate zip file for the OS you would like to run the program on. Be sure to check the checksums match 
+Download the appropriate zip file for the OS you would like to run the program on. Be sure to check that the checksums match.
+The releases can be found on the right by clicking the version number.
 ## Getting started from source
 Clone this repo
 ```
