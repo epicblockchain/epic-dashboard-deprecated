@@ -4,3 +4,5 @@ ePIC-Dashboard-linux-x64
 ePIC-Dashboard-mas-x64
 ePIC-Dashboard-win32-x64
 ePIC-Dashboard-darwin-x64
+*.zip
+checksums.txt
