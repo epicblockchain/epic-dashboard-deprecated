@@ -140,14 +140,16 @@ function epicInit(){
     timer = setInterval(() => {
       //run every request interval
       epicLoop();
-    }, 3000);
+    }, 300000); //5 min
   }, 6000);
 };
 
 //this functions loop is managed by init
 function epicLoop() {
   miners.forEach(m => {
-    if (m.alive) m.fetchSummary();
+    if (m.active) {
+        m.fetchSummary();
+    }
   });
 
   //dashboard

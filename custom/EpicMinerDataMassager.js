@@ -162,12 +162,9 @@ function loadHistoryChartData(miners){
     //uses in place operations, maybe you can get better by using a new var to hold your stuff
     Object.keys(data).forEach(d => {
         var sum = 0;
-        var count = 0;
         data[d].forEach(hr => {
             sum += hr;
-            count++;
         });
-        sum /= count;
         data[d] = sum;
     });
 
