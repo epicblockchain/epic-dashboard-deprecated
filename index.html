@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="node_modules/bulma/css/bulma.min.css">
   <link rel="stylesheet" href="node_modules/@fortawesome/fontawesome-free/css/fontawesome.css">  
   <link rel="stylesheet" href="custom/forms.css">
-  <link rel="stylesheet" href="custom/jpstyle.css">
+  <link rel="stylesheet" href="custom/epicstyle.css">
 </head>
 
 <!-- sidenav -->
@@ -48,7 +48,7 @@
       <div class="container">
         <div class="tile is-ancestor box notification">
           <div class="tile is-parent">
-            <div class="tile jpback is-child box notification is-primary">
+            <div class="tile epicback is-child box notification is-primary">
               </i><div class="subtitle"><i class="epicyellow fas fa-tachometer-alt"></i> Hashrate</div>
               <div id="total-hashrate" class="title is-warning level-item"></div>
               
@@ -56,7 +56,7 @@
             </div>
           </div>
           <div class="tile is-parent">
-            <div class="tile jpback is-child box notification is-primary">
+            <div class="tile epicback is-child box notification is-primary">
               <div class="subtitle"><i class="epicyellow far fa-check-circle"></i> Accepted / Rejected</div>
               <div id="accepted-rejected-shares" class="title is-warning level-item"></div>
               
@@ -64,7 +64,7 @@
             </div>
           </div>
           <div class="tile is-parent">
-            <div class="tile jpback is-child box notification is-primary">
+            <div class="tile epicback is-child box notification is-primary">
               <div class=" subtitle"><i class="epicyellow fas fa-microchip"></i> Active Miners</div>
               <div id="active-miners" class="title is-warning level-item"></div>
               
@@ -78,7 +78,7 @@
     <div class="container">
       <div class="tile is-ancestor box notification">
         <div class="tile is-parent">
-          <div class="tile jpback is-child box notification is-primary">
+          <div class="tile epicback is-child box notification is-primary">
             <div class=" subtitle"><i class="epicyellow fas fa-project-diagram"></i> Pool</div>
             <div id="current-pool" class="title is-warning level-item"></div>
             
@@ -86,7 +86,7 @@
           </div>
         </div>
         <div class="tile is-parent">
-          <div class="tile jpback is-child box notification is-primary">
+          <div class="tile epicback is-child box notification is-primary">
             <div class=" subtitle"><i class="epicyellow far fa-chart-bar"></i> Average Difficulty</div>
             <div id="avg-difficulty" class="title is-warning level-item"></div>
             
@@ -94,7 +94,7 @@
           </div>
         </div>
         <div class="tile is-parent">
-          <div class="tile jpback is-child box notification is-primary">
+          <div class="tile epicback is-child box notification is-primary">
             <div class=" subtitle"><i class="epicyellow far fa-clock"></i> Last Accepted Share</div>
             <div id="last-accepted-share-time" class="title is-warning level-item"></div>
             
@@ -159,7 +159,7 @@
             <label for="input-pool" class="active">Pool</label>
           </div>
           <div class="col s1">
-            <a id="pool-apply" class="waves-effect waves-light btn white-text jpback">Apply</a>
+            <a id="pool-apply" class="waves-effect waves-light btn white-text epicback">Apply</a>
           </div>
           <div class="col s1"></div>
         </div>
@@ -174,7 +174,7 @@
             <label for="input-address-pw" class="active">Password</label>
           </div>
           <div class="col s1">
-            <a id="address-apply" class="waves-effect waves-light btn white-text jpback">Apply</a>
+            <a id="address-apply" class="waves-effect waves-light btn white-text epicback">Apply</a>
           </div>
          <div class="col s1"></div>
         </div>
@@ -190,7 +190,7 @@
               </label>
             </div>          </div>
           <div class="col s1">
-            <a id="uid-apply" class="waves-effect waves-light btn white-text jpback">Apply</a>
+            <a id="uid-apply" class="waves-effect waves-light btn white-text epicback">Apply</a>
           </div>
          <div class="col s1"></div>
         </div>
@@ -200,7 +200,7 @@
             <p>Reset hardware config</p>
           </div>
           <div class="col s1">
-            <a id="hwconfig-apply" class="waves-effect waves-light btn white-text jpback">Apply</a>
+            <a id="hwconfig-apply" class="waves-effect waves-light btn white-text epicback">Apply</a>
           </div>
          <div class="col s1"></div>
         </div>
@@ -215,7 +215,7 @@
             <label>Operating mode</label>
           </div>
           <div class="col s1">
-            <a id="mode-apply" class="waves-effect waves-light btn white-text jpback">Apply</a>
+            <a id="mode-apply" class="waves-effect waves-light btn white-text epicback">Apply</a>
           </div>
          <div class="col s1"></div>
         </div>
@@ -226,7 +226,7 @@
             <label for="input-reboot" class="active">Reboot in seconds (enter 0 or nothing for instant)</label>
           </div>
           <div class="col s1">
-            <a id="reboot-apply" class="waves-effect waves-light btn white-text jpback">Apply</a>
+            <a id="reboot-apply" class="waves-effect waves-light btn white-text epicback">Apply</a>
           </div>
           <div class="col s1"></div>
         </div>
@@ -237,14 +237,14 @@
             <label for="input-newpw" class="active">New Password</label>
           </div>
           <div class="col s1">
-            <a id="newpw-apply" class="waves-effect waves-light btn white-text jpback">Apply</a>
+            <a id="newpw-apply" class="waves-effect waves-light btn white-text epicback">Apply</a>
           </div>
           <div class="col s1"></div>
         </div>
 
         <div class="row valign-wrapper">
           <div class="col s2">
-            <a id="swupdate-browse" class="waves-effect waves-light btn white-text jpback">Browse</a>
+            <a id="swupdate-browse" class="waves-effect waves-light btn white-text epicback">Browse</a>
           </div>
           <div class="col s2">
             <div class="switch">
@@ -259,7 +259,7 @@
             <p id="swupdate-filepath">Click browse to search for a firmware update file</p>
           </div>
           <div class="col s4">
-            <a id="swupdate-apply" class="waves-effect waves-light btn white-text jpback right">Update Firmware</a>
+            <a id="swupdate-apply" class="waves-effect waves-light btn white-text epicback right">Update Firmware</a>
           </div>
         </div>
       </div>
@@ -273,7 +273,7 @@
             <label for="input-password" class="active">Password</label>
           </div>
           <div class="col s1">
-            <a id="password-apply" class="waves-effect waves-light btn white-text jpback">Submit</a>
+            <a id="password-apply" class="waves-effect waves-light btn white-text epicback">Submit</a>
           </div>
         </div>
       </div>
