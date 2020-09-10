@@ -104,21 +104,18 @@ function epicInit(){
       if (fs.existsSync('ipaddr.txt')) {
         console.log("Found ipaddr.txt file.");
         var ipaddr = fs.readFileSync('ipaddr.txt');
-        ipaddr = ipaddr.toString().split('\n');
-        ipaddr.forEach(el => {
-          var found = 0;
-          var pair = el.split(':');
-          miners.forEach(m => {
-            if (m.ip === el.split(':')[0]) {
-              found = 1;
+        ips = ipaddr.toString().split('\n');
+        ips.forEach(ip => {
+            var pair = ip.split(':');
+            if (pair[0]){
+                if (!pair[1]){
+                    pair[1] = '4028';
+                }
+                miners.push(new minerinfo.MinerInfo(
+                    pair[0],
+                    pair[1]
+                ));
             }
-          });
-          if (found == 0) {
-            miners.push(new minerinfo.MinerInfo(
-              pair[0],
-              pair[1]
-            ));
-          }   
         });
       } else {
         console.log("No ipaddr.txt file found.");

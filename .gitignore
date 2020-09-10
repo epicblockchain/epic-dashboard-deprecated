@@ -1,4 +1,5 @@
 *.swp
+ipaddr.txt
 node_modules/
 ePIC-Dashboard-linux-x64
 ePIC-Dashboard-mas-x64
