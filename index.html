@@ -289,6 +289,38 @@
       <script src="node_modules/@fortawesome/fontawesome-free/js/all.js"></script>
 
       <script>
+        
+        //enter to submit pw and other fields
+        $("#input-password").keyup(function(event) {
+            if (event.keyCode === 13) {
+                $("#password-apply").click();
+            }
+        });
+            //pool
+        $("#input-pool").keyup(function(event) {
+            if (event.keyCode === 13) {
+                $("#pool-apply").click();
+            }
+        });
+            //addr
+        $("#input-address").keyup(function(event) {
+            if (event.keyCode === 13) {
+                $("#address-apply").click();
+            }
+        });
+            //reboottime
+        $("#input-reboot").keyup(function(event) {
+            if (event.keyCode === 13) {
+                $("#reboot-apply").click();
+            }
+        });
+            //new password
+        $("#input-newpw").keyup(function(event) {
+            if (event.keyCode === 13) {
+                $("#newpw-apply").click();
+            }
+        });
+
 
         //electron
         var e = require('electron');
