@@ -93,6 +93,12 @@ function generateMinerData(miners){
   
     miners.forEach(m => {
       if (m.active) {
+        //0 is falsey so we can parse to say that if we have recieved any packets for any kind a false result originated from a 0
+
+        var submitted = m.response["Session"]["Submitted"];
+        var acceptedVal = submitted ? (m.response["Session"]["Accepted"]) : "N/A";
+        var rejectedVal = submitted ? (m.response["Session"]["Rejected"]) : "N/A";
+
         var datum = [m.response["Hostname"],
           m.response["Software"] || "N/A",
           // m.response["Mining"]["Coin"] || "N/A",
@@ -106,8 +112,8 @@ function generateMinerData(miners){
           // m.response["Session"]["WorkReceived"] || "N/A",
           m.response["Session"]["Active HBs"] || "N/A",
           MHToHRString(m.response["Session"]["Average MHs"]) || "N/A",
-          m.response["Session"]["Accepted"] || "N/A",
-          m.response["Session"]["Rejected"] || "N/A",
+          acceptedVal,
+          rejectedVal,
           // m.response["Session"]["Submitted"] || "N/A",
           m.response["Session"]["Difficulty"] || "N/A",
           // 'fan speed string todo',
