@@ -1,6 +1,6 @@
 {
   "name": "epic-dashboard",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "dashboard for the sc200 miner",
   "main": "main.js",
   "scripts": {
