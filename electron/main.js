@@ -5,6 +5,7 @@ const dnssd = require('dnssd2');
 const got = require('got')
 const fs = require('fs')
 const open = require('open')
+
 var FormData = require('form-data')
 var sha256 = require('sha256-file')
 
@@ -189,45 +190,47 @@ let summaryTimer = setInterval(()=>{
     for (let i = 0; i < len; i++) {
         (async ()=>{
             try {
-                const response = await got('http://' + miners[i].ip + '/summary', {
-                    responseType: 'json',
-                    timeout: 5000
-                });
-                miners[i].summary.data = response.body;
-                miners[i].summary.status = 'completed';
-                //store some historical data
-                if (!miners[i].history.hourData){
-                    miners[i].history.hourData = [];
-                }
-                miners[i].history.hourData.push({
-                    "Hashrate": response.body["Session"]["Average MHs"],
-                    "Timestamp": Math.round(Math.round(Date.now() / 1000)/5)*5
-                });
-
-                if (miners[i].rebooting
-                    && ( Date.now() - miners[i].rebootTime > 30000) // must have been 30 seconds since starting the reboot to unreboot
-                ){
-                    miners[i].rebooting = false;
-                }
-
-                //append to history
-                if (miners[i].history.status === 'completed'
-                    && response.body['Session']['LastAverageMHs']['Timestamp'] > miners[i].history.lastSeenTimestamp
-                ) {
-                    miners[i].history.lastSeenTimestamp = response.body['Session']['LastAverageMHs']['Timestamp'];
-                    miners[i].history.data.History.push({
-                        "Hashrate": response.body["Session"]["LastAverageMHs"]['Hashrate'],
-                        "Timestamp": response.body['Session']['LastAverageMs']['Timestamp']
+                    const response = await got('http://' + miners[i].ip + '/summary', {
+                        responseType: 'json',
+                        timeout: 5000
                     });
-                    miners[i].history.hourData = [];
+                    miners[i].summary.data = response.body;
+                    miners[i].summary.status = 'completed';
+                    //store some historical data
+                    if (miners[i].history.status = 'completed') {
+                        if (!miners[i].history.hourData){
+                            miners[i].history.hourData = [];
+                        }
+                        miners[i].history.hourData.push({
+                            "Hashrate": response.body["Session"]["Average MHs"],
+                            "Timestamp": Math.round(Math.round(Date.now() / 1000)/5)*5
+                        });
+
+                        if (miners[i].rebooting
+                            && ( Date.now() - miners[i].rebootTime > 30000) // must have been 30 seconds since starting the reboot to unreboot
+                        ){
+                            miners[i].rebooting = false;
+                        }
+
+                        //append to history
+                        if (miners[i].history.status === 'completed'
+                            && response.body['Session']['LastAverageMHs']
+                            && response.body['Session']['LastAverageMHs']['Timestamp'] > miners[i].history.lastSeenTimestamp
+                        ) {
+                            miners[i].history.lastSeenTimestamp = response.body['Session']['LastAverageMHs']['Timestamp'];
+                            miners[i].history.data.History.push({
+                                "Hashrate": response.body["Session"]["LastAverageMHs"]['Hashrate'],
+                                "Timestamp": response.body['Session']['LastAverageMHs']['Timestamp']
+                            });
+                            miners[i].history.hourData = [];
+                        }
+                    }
+                } catch (err) {
+                    miners[i].summary.data = null;
+                    miners[i].summary.status = 'error'
                 }
-            } catch (err) {
-                miners[i].summary.data = null;
-                miners[i].summary.status = 'error'
-            }
         })();
     }
-
 }, intervalTime)
 
 let historyTimer = setInterval(()=>{
@@ -402,19 +405,40 @@ ipcMain.on('get-settings', (event, arg) => {
     }));
 })
 
+function getAppDataPath() {
+    switch (process.platform) {
+        case "darwin": {
+            return path.join(process.env.HOME, "Library", "Application Support", "ePIC-Dashboard");
+        }
+        case "win32": {
+            return path.join(process.env.APPDATA, "ePIC-Dashboard");
+        }
+        case "linux": {
+            return path.join(process.env.HOME, ".ePIC-Dashboard");
+        }
+        default: {
+            console.log("Unsupported platform!");
+            process.exit(1);
+        }
+    } 
+}
+
 function saveMiners(){
     let minersString = '';
-
     miners.forEach(m => {
         minersString += m.ip + '\n';
     })
 
-    fs.writeFile('ipaddr.txt', minersString, function (err) {
+    fs.mkdir(getAppDataPath(), {recursive: true}, (err) => {
+        console.log(err);
+    })
+
+    fs.writeFile(path.join(getAppDataPath(), 'ipaddr.txt'), minersString, function (err) {
         if (err) {
             console.log(err);
             throw err;
         }
-        console.log('Saved miners to ipaddr.txt')
+        console.log('Saved miners to ' + path.join(getAppDataPath(), 'ipaddr.txt'))
         mainWindow.webContents.send('toast', {
             type: 'good',
             message: 'Saved miners'
@@ -457,7 +481,7 @@ ipcMain.on('add-new-miners', (event, arg) => {
 
 //load previous miners
 ipcMain.on('load-previous-miners', (event, arg) => {
-    fs.readFile('./ipaddr.txt', (err, data) => {
+    fs.readFile(path.join(getAppDataPath(), 'ipaddr.txt'), (err, data) => {
         if (err) {
             mainWindow.webContents.send('toast', {
                 type: 'bad',
@@ -596,7 +620,7 @@ function postFormToIPs(ips, endpoint, password, checksum, keepsettings, filepath
                 const { body } = await got.post('http://' + ips[i] + endpoint, {
                     body: f,
                     responseType: 'json',
-                    timeout: 300000 // 5 minutes
+                    timeout: 7200000 // 2hr
                 }).catch(err => {
                     console.log(err)
                 })
@@ -724,7 +748,7 @@ ipcMain.on('post-settings', (event, arg) => {
 })
 
 function sendData(){
-    if (listenerType === 'loading' && miners.length) {
+    if ( (listenerType === 'loading' || listenerType === 'table') && miners.length) {
         mainWindow.webContents.send('stop-loading')
     } else if (listenerType === 'dashboard') {
         mainWindow.webContents.send('get-dashboard-reply', getDashboardData())

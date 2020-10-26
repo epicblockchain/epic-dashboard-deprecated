@@ -180,9 +180,4 @@ The form values are described by their keys.
 ## Specific addresses
 
 It is possible to add ips with a file if mdns is not working for some reason.
-Create a file in the same directory as the executable named ipaddr.txt.
-Put each ip and port on its own line. An example is provided below.
-```
-1.2.3.4:4028
-10.10.10.10:4028
-```
+Use the interface in the table tab to add, save and load miners.
