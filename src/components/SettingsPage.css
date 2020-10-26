@@ -1,0 +1,21 @@
+.settingsContainer {
+    display: flex;
+    margin-top: 50px;
+    margin-left: 15%;
+    margin-right: 15%;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.settingsTableDiv {
+    margin: 10px;
+}
+
+.settingsTabsDiv {
+    margin: 10px;
+}
+
+.selectAllMenu {
+    background-color: #1b1d4d!important;
+    color: white!important;
+}

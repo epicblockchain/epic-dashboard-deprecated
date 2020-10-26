@@ -1,0 +1,78 @@
+.minersPageContainer {
+    margin-left: 5%;
+    margin-right: 5%;
+}
+
+.minersTableCategoriesContainer {
+    margin-top: 5%;
+    margin-right: 5%;
+
+}
+
+.minersTableContainer {
+    display: flex;
+    flex-wrap: nowrap;
+    margin-top: 10px;
+    justify-content: center;
+}
+
+.bp3-table-cell {
+  font-size: 15px;
+}
+
+.bp3-table-header {
+  background: #1B1D4D !important;/* Green */
+  color: white !important;
+}
+.bp3-table-header-selected {
+  background: #1B1D4D !important;/* Green */
+  color: #ffc107 !important;
+}
+.bp3-table-column-name:hover {
+  background: #1B1D4D !important;/* Green */
+  color: #ffc107 !important;
+}
+.bp3-table-cell:hover {
+  background: #1B1D4D !important;/* Green */
+  color: #ffc107 !important;
+}
+
+.minersTable {
+    margin-top: 30px;
+}
+
+.newMinersFormContainer {
+    margin: 10px;
+}
+
+.addMinerButton {
+    margin-left: 6px;
+    margin-right: 3px;
+    margin-top: 3px;
+}
+
+.saveMinerButton {
+    margin-left: 6px;
+    margin-right: 3px;
+    margin-top: 3px;
+}
+
+.loadMinerButton {
+    margin-left: 6px;
+    margin-right: 3px;
+    margin-top: 3px;
+}
+
+.powerTip {
+    position: relative;
+    right: 13px;
+}
+
+.bp3-icon {
+  color: #ffc107 !important;
+}
+
+.ipBox {
+    width: 400px;
+    margin-left: 6px;
+}

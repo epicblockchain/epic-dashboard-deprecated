@@ -1,17 +1,27 @@
 # How to Get Started
 Please read COPYING and EULA before proceeding
 ## Getting started from a binary
-Download the appropriate zip file for the OS you would like to run the program on. Be sure to check that the checksums match.
-The releases can be found on the right by clicking the version number.
+Download the appropriate zip file for the OS you would like to run the program on. Be sure to check the checksums match 
 ## Getting started from source
 Clone this repo
 ```
 git clone <this repo>
 npm install
-npm start
+npm run dev
 ```
 A window should open with the app running
-![minergui](minergui.png)
+## Building from source
+To build all executables run
+```
+make all
+```
+To build only you executable open the makefile and edit the parameters in --platform and --arch to your platform and architecture.
+Then you can run
+```
+make all
+```
+to build only one executable. For more info refer to the documentation on electron-packager: https://github.com/electron/electron-packager
+
 ## API
 Api requests are documented as follows. Under each METHOD are the endpoint and expected values that are returned or should be provided.
 ### GET
@@ -143,7 +153,7 @@ Format of request body:
 }
 ```
 **/hwconfig**
-Reinitialize the hardware config.
+Recalibrate the miner.
 param should be set to true.
 Format of request body:
 ```
