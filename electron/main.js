@@ -226,8 +226,14 @@ let summaryTimer = setInterval(()=>{
                         }
                     }
                 } catch (err) {
-                    miners[i].summary.data = null;
-                    miners[i].summary.status = 'error'
+                    try {
+                        miners[i].summary.data = null;
+                        miners[i].summary.status = 'error'
+                    } catch (err) {
+                        console.log('error, miner was removed during summary request');
+                        console.log('or');
+                        console.log(err);
+                    }
                 }
         })();
     }
@@ -371,7 +377,6 @@ function getChartData() {
             hashrate: chartDataObj[prop] / 1000000
         })
     }
-    
     return chartData;
 }
 
@@ -525,6 +530,18 @@ ipcMain.on('load-previous-miners', (event, arg) => {
 
 ipcMain.on('save-current-miners', (event, arg) => {
     saveMiners();
+})
+
+ipcMain.on('remove-miners', (event, arg) => {
+    arg.forEach(removeIp => {
+        let i = miners.findIndex( m => m.ip === removeIp);
+        let removedIP = miners.splice(i, 1)[0].ip;
+        console.log('removed: ' + removedIP)
+        mainWindow.webContents.send('toast', {
+            type: 'good',
+            message: 'Removed ' + removedIP + ' from the dashboard'
+        });
+    });
 })
 
 function successMessageFromEndpoint(endpoint, ip){

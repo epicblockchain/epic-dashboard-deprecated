@@ -120,7 +120,10 @@ class App extends React.Component {
   }
 
   toggleDarkMode(){
-        this.setState({isDarkMode: !this.state.isDarkMode});
+    this.setState({isDarkMode: !this.state.isDarkMode});
+    if (this.state.page === 'chart') {
+        this.refs.chartPage.handleRefreshChartData();
+    }
   }
  
   render() {
@@ -154,7 +157,10 @@ class App extends React.Component {
                       <MenuItem icon={this.state.isDarkMode ? "lightbulb" : "moon"} text={this.state.isDarkMode ? "Light Mode" : "Dark Mode"} onClick={this.toggleDarkMode} />
                       <MenuDivider className="yellowMenuDivider"/>
                       <MenuItem icon="dashboard" text="Overview" onClick={() => this.onSetPage('dashboard')} />
-                      <MenuItem icon="chart" text="Hashrate Chart" onClick={() => this.onSetPage('chart')} />
+                      <MenuItem icon="chart"
+                            text="Hashrate Chart" 
+                            onClick={() => this.onSetPage('chart')}
+                        />
                       <MenuItem icon="th" text="Miner List" onClick={() => this.onSetPage('table')} />
                       <MenuItem icon="cog" text="Miner Settings" onClick={() => this.onSetPage('settings')} />
                       <MenuItem icon="help" text="Support" onClick={() => this.onSetPage('support')} />
@@ -167,7 +173,7 @@ class App extends React.Component {
               <Button className="maximizeSidebarButton" icon="caret-right" onClick={() => this.onSetSidebarOpen(true)} />
               {this.state.page === 'loading' && <LoadingPage />}
               {this.state.page === 'dashboard' && <DashboardPage />}
-              {this.state.page === 'chart' && <ChartPage />}
+              {this.state.page === 'chart' && <ChartPage ref="chartPage" dark={this.state.isDarkMode} />}
               {<TablePage                   visible={this.state.page === 'table'}
                                                 />}
               {this.state.page === 'settings' && <SettingsPage />}
