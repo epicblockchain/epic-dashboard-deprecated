@@ -342,13 +342,17 @@ function getChartData() {
     //historical data
     miners.forEach(miner=>{
         if (miner.history.status === 'completed') {
-            miner.history.data.History.forEach((el)=>{
-                if (!(el.Timestamp in chartDataObj)){
-                    chartDataObj[el.Timestamp] = el.Hashrate;
-                } else {
-                    chartDataObj[el.Timestamp] += el.Hashrate;
-                }
-            });
+            try {
+                miner.history.data.History.forEach((el)=>{
+                    if (!(el.Timestamp in chartDataObj)){
+                        chartDataObj[el.Timestamp] = el.Hashrate;
+                    } else {
+                        chartDataObj[el.Timestamp] += el.Hashrate;
+                    }
+                });
+            } catch (e) {
+                console.log('Something wrong in electron main. Probably a empty miner history race condition');
+            }
         }
     });
     let chartData = [];
