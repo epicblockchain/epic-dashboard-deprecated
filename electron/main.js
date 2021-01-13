@@ -258,6 +258,23 @@ let historyTimer = setInterval(()=>{
     }
 }, intervalTimeHistory);
 
+function calculateAverages(miner){
+    let averages = {
+        "1hr": 0,
+        "6hr": 0,
+        "24hr": 0
+    }
+    if (miner.history.status === 'completed'){
+        let samples = Array(24).fill(0);
+        const reverseHistory = miner.history.data.History.reverse().slice(0, 24); //24 elements from the back in reverse
+        averages["1hr"] = reverseHistory[0];
+        //todo
+        averages["6hr"] = ;
+        averages["24hr"] = ;
+    }
+    return averages;
+}
+
 //dashboard
 
 function getDashboardData(){
@@ -370,7 +387,8 @@ ipcMain.on('get-table', (event, arg) => {
         return {
             ip: miner.ip,
             summary: miner.summary,
-            rebooting: miner.rebooting || false
+            rebooting: miner.rebooting || false,
+            averageHRs: calculateAverages(miner)
         }
     }));
 });
