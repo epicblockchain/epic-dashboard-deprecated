@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Switch, Tab, Tabs } from '@blueprintjs/core'
+import { Button, InputGroup, Switch, Tab, Tabs } from '@blueprintjs/core'
 import { Cell, Column, Table } from '@blueprintjs/table'
 import MiningPoolTab from './SettingsTabs/MiningPoolTab'
 import WalletAddressTab from './SettingsTabs/WalletAddressTab'
@@ -48,6 +48,38 @@ class SettingsPage extends React.Component {
         this.deselectAll                 = this.deselectAll.bind(this);
 
         this.hasSomeMinersSelected       = this.hasSomeMinersSelected.bind(this);
+
+        this.handleFilterChange          = this.handleFilterChange.bind(this);
+    }
+
+    stringifyMinerForSearch(miner){
+        if (miner.rebooting) {
+            return miner.ip + " Rebooting";
+        } else if (miner.summary.status === 'empty') {
+            return miner.ip + " Loading";
+        } else if (miner.summary.status === 'completed') {
+
+            let str = miner.ip + ' ';
+            str += miner.summary.data["Preset"] + ' ';
+            str += miner.summary.data["Stratum"]["Current Pool"] + ' ';
+            str += miner.summary.data["Stratum"]["Current User"] + ' ';
+            str += miner.summary.data["Software"] + ' ';
+            return str;
+
+        } else {
+            return miner.ip + " Error";
+        }
+
+
+    }
+
+    handleFilterChange(e){
+        let newMiners = this.state.miners;
+        newMiners.forEach( m => {
+            m.visible = this.stringifyMinerForSearch(m).includes(e.target.value);
+        });
+        this.setState({miners: newMiners});
+        
     }
 
     hasSomeMinersSelected(){
@@ -135,82 +167,73 @@ class SettingsPage extends React.Component {
         }
     }
 
-    ipCellRenderer(rowIndex: number){
+    errorCellRenderer(rowIndex: number, cell_contents_closure){
         if (this.state.pageState === 'loading') {
-            return <Cell>{"Loading"}</Cell>
+            return <Cell>{"Loading"}</Cell>;
+        } else if (this.state.miners[rowIndex].rebooting) {
+            return <Cell>{"Rebooting"}</Cell>;
+        } else if (this.state.miners[rowIndex].summary.status === 'empty') {
+            return <Cell>{"Loading"}</Cell>;
+        } else if (this.state.miners[rowIndex].summary.status === 'completed'){
+            return <Cell>{cell_contents_closure()}</Cell>
         } else {
-            return <Cell>{this.state.miners[rowIndex].ip}</Cell>
+            return <Cell>{"Error"}</Cell>;
         }
+    }
+
+    getNthVisibleMinerIndex(rowIndex){
+        let count = 0;
+        const miners = this.state.miners;
+        for (let i = 0; i < miners.length; i++){
+            const m = miners[i];
+            if (m.visible){
+                if (count === rowIndex){
+                    return i;
+                } else {
+                    count += 1;
+                }
+            }
+        }
+        console.log('count: ', count);
+        console.log('rowIndex: ', rowIndex);
+        console.log('numVisible: ', miners.filter(m => m.visible).length);
+
+        throw new Error("Higher rowIndex than number of visible miners");
+    }
+
+    getVisibleMiners(){
+        const miners = this.state.miners;
+        return miners.filter(m => m.visible);
+    }
+
+    ipCellRenderer(rowIndex: number){
+        rowIndex = this.getNthVisibleMinerIndex(rowIndex);
+        return this.errorCellRenderer(rowIndex, () => { return <Cell>{this.state.miners[rowIndex].ip}</Cell> } );
     }
 
     nameCellRenderer(rowIndex: number){
-        if (this.state.pageState === 'loading') {
-            return <Cell>{"Loading"}</Cell>
-        } else if (this.state.miners[rowIndex].rebooting) {
-            return <Cell>{"Rebooting"}</Cell>
-        } else if (this.state.miners[rowIndex].summary.status === 'empty') {
-            return <Cell>{"Loading"}</Cell>
-        } else if (this.state.miners[rowIndex].summary.status === 'completed') {
-            return <Cell>{this.state.miners[rowIndex].summary.data["Hostname"]}</Cell>
-        } else {
-            return <Cell>{"Error"}</Cell>
-        }
+        rowIndex = this.getNthVisibleMinerIndex(rowIndex);
+        return this.errorCellRenderer(rowIndex, ()=>{ return <Cell>{this.state.miners[rowIndex].summary.data["Hostname"]}</Cell> });
     }
 
     firmwareVersionCellRenderer(rowIndex: number){
-        if (this.state.pageState === 'loading') {
-            return <Cell>{"Loading"}</Cell>
-        } else if (this.state.miners[rowIndex].rebooting) {
-            return <Cell>{"Rebooting"}</Cell>
-        } else if (this.state.miners[rowIndex].summary.status === 'empty') {
-            return <Cell>{"Loading"}</Cell>
-        } else if (this.state.miners[rowIndex].summary.status === 'completed') {
-            return <Cell>{this.state.miners[rowIndex].summary.data["Software"]}</Cell>
-        } else {
-            return <Cell>{"Error"}</Cell>
-        }
+        rowIndex = this.getNthVisibleMinerIndex(rowIndex);
+        return this.errorCellRenderer(rowIndex, ()=>{ return <Cell>{this.state.miners[rowIndex].summary.data["Software"]}</Cell> });
     }
     
     operatingModeCellRenderer(rowIndex: number){
-        if (this.state.pageState === 'loading') {
-            return <Cell>{"Loading"}</Cell>
-        } else if (this.state.miners[rowIndex].rebooting) {
-            return <Cell>{"Rebooting"}</Cell>
-        } else if (this.state.miners[rowIndex].summary.status === 'empty') {
-            return <Cell>{"Loading"}</Cell>
-        } else if (this.state.miners[rowIndex].summary.status === 'completed') {
-            return <Cell>{this.state.miners[rowIndex].summary.data["Preset"]}</Cell>
-        } else {
-            return <Cell>{"Error"}</Cell>
-        }
+        rowIndex = this.getNthVisibleMinerIndex(rowIndex);
+        return this.errorCellRenderer(rowIndex, ()=>{ return <Cell>{this.state.miners[rowIndex].summary.data["Preset"]}</Cell> });
     }
 
     walletCellRenderer(rowIndex: number){
-        if (this.state.pageState === 'loading') {
-            return <Cell>{"Loading"}</Cell>
-        } else if (this.state.miners[rowIndex].rebooting) {
-            return <Cell>{"Rebooting"}</Cell>
-        } else if (this.state.miners[rowIndex].summary.status === 'empty') {
-            return <Cell>{"Loading"}</Cell>
-        } else if (this.state.miners[rowIndex].summary.status === 'completed') {
-            return <Cell>{this.state.miners[rowIndex].summary.data["Stratum"]["Current User"]}</Cell>
-        } else {
-            return <Cell>{"Error"}</Cell>
-        }
+        rowIndex = this.getNthVisibleMinerIndex(rowIndex);
+        return this.errorCellRenderer(rowIndex, ()=>{ return <Cell>{this.state.miners[rowIndex].summary.data["Stratum"]["Current User"]}</Cell> });
     }
 
     miningPoolCellRenderer(rowIndex: number){
-        if (this.state.pageState === 'loading') {
-            return <Cell>{"Loading"}</Cell>
-        } else if (this.state.miners[rowIndex].rebooting) {
-            return <Cell>{"Rebooting"}</Cell>
-        } else if (this.state.miners[rowIndex].summary.status === 'empty') {
-            return <Cell>{"Loading"}</Cell>
-        } else if (this.state.miners[rowIndex].summary.status === 'completed') {
-            return <Cell>{this.state.miners[rowIndex].summary.data["Stratum"]["Current Pool"]}</Cell>
-        } else {
-            return <Cell>{"Error"}</Cell>
-        }
+        rowIndex = this.getNthVisibleMinerIndex(rowIndex);
+        return this.errorCellRenderer(rowIndex, ()=>{ return <Cell>{this.state.miners[rowIndex].summary.data["Stratum"]["Current Pool"]}</Cell> });
     }
 
     handleApplyToChange(e){
@@ -225,6 +248,7 @@ class SettingsPage extends React.Component {
     }
 
     applyToCellRenderer(rowIndex: number){
+        rowIndex = this.getNthVisibleMinerIndex(rowIndex);
         const isDisabled = this.state.miners[rowIndex].summary.status !== 'completed';
         return <Cell><Switch value={this.state.miners[rowIndex].ip} checked={this.state.miners[rowIndex].isChecked || false} disabled={isDisabled} onChange={this.handleApplyToChange} /></Cell>
     }
@@ -260,10 +284,14 @@ class SettingsPage extends React.Component {
             const idx = currentIps.findIndex((ip) => ip === newMiner.ip);
             if (idx === -1){
                 newMiner.isChecked = false;
+                newMiner.visible = true;
                 newMiners.push(newMiner);
             } else {
                 newMiner.isChecked = newMiners[idx].isChecked; //persist checkbox data -> maybe this can be kept seperately but performance seems to be aboutthe same
+                //also persist visibility
+                const oldVisibility = newMiners[idx].visible;
                 newMiners[idx] = newMiner;
+                newMiners[idx].visible = oldVisibility;
             }
         });
         this.setState({miners: newMiners});
@@ -294,7 +322,7 @@ class SettingsPage extends React.Component {
                 return el;
             }
             let newMiner = el;
-            newMiner.isChecked = true;
+            newMiner.isChecked = el.visible;
             return newMiner;
         });
         this.setState({miners: newMiners});
@@ -322,23 +350,16 @@ class SettingsPage extends React.Component {
     }
 
     render () {
-        
-
-        // const menuRenderer = () => {
-        //     return (
-        //             <Menu className="selectAllMenu">
-        //                 <MenuItem icon="selection" text="Select all"   onClick={this.selectAll} />
-        //                 <MenuItem icon="circle"    text="Deselect all" onClick={this.deselectAll} />
-        //             </Menu>
-        //         );
-        // }
-    
-        // const columnHeaderCellRenderer = () => {
-        //     return <ColumnHeaderCell name="Apply To" menuRenderer={menuRenderer} />
-        // }
 
         return (
             <div className="settingsContainer">
+                <div className="minerSearchBarContianer">
+                    <InputGroup
+                        leftIcon="filter"
+                        onChange={this.handleFilterChange}
+                        placeholder="Filter table..."
+                    />
+                </div>
                 <div className="settingsTableDiv">
                     <div className="selectionButtons">
                         <Button className="selectionButton" icon="circle" onClick={this.deselectAll} />
@@ -346,7 +367,7 @@ class SettingsPage extends React.Component {
                     </div>
                     <Table getCellClipboardData={this.handleCopy}
                             enableRowHeader={false}
-                            numRows={this.state.miners.length}
+                            numRows={this.getVisibleMiners().length}
                             onSelection={this.handleSelectionChange}>
                         <Column name='IP' cellRenderer={this.ipCellRenderer} />
                         <Column name='Firmware Version' cellRenderer={this.firmwareVersionCellRenderer} />
