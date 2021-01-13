@@ -198,14 +198,6 @@ let summaryTimer = setInterval(()=>{
                     miners[i].summary.status = 'completed';
                     //store some historical data
                     if (miners[i].history.status = 'completed') {
-                        if (!miners[i].history.hourData){
-                            miners[i].history.hourData = [];
-                        }
-                        miners[i].history.hourData.push({
-                            "Hashrate": response.body["Session"]["Average MHs"],
-                            "Timestamp": Math.round(Math.round(Date.now() / 1000)/5)*5
-                        });
-
                         if (miners[i].rebooting
                             && ( Date.now() - miners[i].rebootTime > 30000) // must have been 30 seconds since starting the reboot to unreboot
                         ){
@@ -222,7 +214,7 @@ let summaryTimer = setInterval(()=>{
                                 "Hashrate": response.body["Session"]["LastAverageMHs"]['Hashrate'],
                                 "Timestamp": response.body['Session']['LastAverageMHs']['Timestamp']
                             });
-                            miners[i].history.hourData = [];
+                            // miners[i].history.hourData = [];
                         }
                     }
                 } catch (err) {
@@ -248,7 +240,7 @@ let historyTimer = setInterval(()=>{
                     const response = await got('http://' + miners[i].ip + '/history', {
                         responseType: 'json',
                         timeout: 5000
-                    })
+                    });
                     miners[i].history.data = response.body;
                     miners[i].history.status = 'completed';
                     if (response.body['History'].length){
@@ -356,25 +348,6 @@ function getChartData() {
         }
     });
     let chartData = [];
-    for (const prop in chartDataObj) {
-        chartData.push({
-            time: new Date(prop * 1000),
-            hashrate: chartDataObj[prop] / 1000000
-        })
-    }
-    //append instantaneous data
-    chartDataObj = {};
-    miners.forEach(miner=>{
-        if (miner.history.hourData) {
-            miner.history.hourData.forEach((el)=>{
-                if (!(el.Timestamp in chartDataObj)){
-                    chartDataObj[el.Timestamp] = el.Hashrate;
-                } else {
-                    chartDataObj[el.Timestamp] += el.Hashrate;
-                }
-            });
-        }
-    });
     for (const prop in chartDataObj) {
         chartData.push({
             time: new Date(prop * 1000),
