@@ -265,17 +265,17 @@ function calculateAverages(miner){
         "24hr": 0
     }
     if (miner.history.status === 'completed'){
-        console.log('miner history');
-        console.log(miner.history)
+        console.log('miner history length:');
         console.log(miner.history.length);
-        console.log('history is completed');
-        let samples = Array(24).fill(0);
         //generate fake data for now
-        const reverseHistory = miner.history.data.History.reverse().slice(0, 24); //24 elements from the back in reverse
+        const reverseHistoryClone = miner.history.data.History.slice();
+        const reverseHistory = reverseHistoryClone.reverse().slice(0, 24); //24 elements from the back in reverse
         averages["1hr"] = reverseHistory[0]["Hashrate"];
         //todo
         averages["6hr"] = reverseHistory.slice(0,6).reduce((a, b) => a["Hashrate"]+b["Hashrate"]) / 6;
         averages["24hr"] = reverseHistory.slice(0,24).reduce((a, b) => a["Hashrate"]+b["Hashrate"]) / 24;
+
+        console.log(averages);
     }
     console.log('returning averages');
     console.log(averages);
