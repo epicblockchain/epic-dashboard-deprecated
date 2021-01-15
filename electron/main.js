@@ -265,20 +265,15 @@ function calculateAverages(miner){
         "24hr": 0
     }
     if (miner.history.status === 'completed'){
-        console.log('miner history length:');
-        console.log(miner.history.length);
-        //generate fake data for now
-        const reverseHistoryClone = miner.history.data.History.slice();
-        const reverseHistory = reverseHistoryClone.reverse().slice(0, 24); //24 elements from the back in reverse
-        averages["1hr"] = reverseHistory[0]["Hashrate"];
-        //todo
-        averages["6hr"] = reverseHistory.slice(0,6).reduce((a, b) => a["Hashrate"]+b["Hashrate"]) / 6;
-        averages["24hr"] = reverseHistory.slice(0,24).reduce((a, b) => a["Hashrate"]+b["Hashrate"]) / 24;
-
-        console.log(averages);
+        const historyClone = miner.history.data.History.map(el => {
+            return el.Hashrate;
+        });
+        //24 elements from the back in reverse, a better way might be to use the timestamp on the history object
+        const reverseHistory = historyClone.reverse().slice(0, 24);
+        averages["1hr"] = reverseHistory[0];
+        averages["6hr"] = reverseHistory.slice(0,6).reduce((a, b) => a+b) / 6;
+        averages["24hr"] = reverseHistory.slice(0,24).reduce((a, b) => a+b) / 24;
     }
-    console.log('returning averages');
-    console.log(averages);
     return averages;
 }
 
