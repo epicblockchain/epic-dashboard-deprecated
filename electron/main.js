@@ -539,6 +539,7 @@ ipcMain.on('remove-miners', (event, arg) => {
             message: 'Removed ' + removedIP + ' from the dashboard'
         });
     });
+    saveMiners();
 })
 
 function successMessageFromEndpoint(endpoint, ip){
