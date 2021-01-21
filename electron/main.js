@@ -810,6 +810,12 @@ ipcMain.on('post-settings', (event, arg) => {
 })
 
 function sendData(){
+    //handle a race condition with the window closing and still trying to send data to it
+    if (mainWindow.webContents === null){
+        console.log('trying to send data when webcontents has closed or has not been init');
+        return;
+    }
+
     if ( (listenerType === 'loading' || listenerType === 'table') && miners.length) {
         mainWindow.webContents.send('stop-loading')
     } else if (listenerType === 'dashboard') {
