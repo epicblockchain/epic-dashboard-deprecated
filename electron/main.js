@@ -260,9 +260,30 @@ let historyTimer = setInterval(()=>{
 
 function calculateAverages(miner){
     let averages = {
-        "1hr": 0,
-        "6hr": 0,
-        "24hr": 0
+        "15min": {
+            hashrate: 0,
+            valid: false
+        },
+        "1hr": {
+            hashrate: 0,
+            valid: false
+        },
+        "6hr": {
+            hashrate: 0,
+            valid: false
+        },
+        "24hr": {
+            hashrate: 0,
+            valid: false
+        }
+    }
+    if (miner.summary.status === 'completed'){
+        try {
+            averages["15min"].hashrate = miner.summary.data["Session"]["Average MHs"];
+            averages["15min"].valid = true;
+        } catch (e) {
+            console.log(e);
+        }
     }
     if (miner.history.status === 'completed'){
         const historyClone = miner.history.data.History.map(el => {
@@ -270,10 +291,36 @@ function calculateAverages(miner){
         });
         //24 elements from the back in reverse, a better way might be to use the timestamp on the history object
         const reverseHistory = historyClone.reverse().slice(0, 24);
-        averages["1hr"] = reverseHistory[0];
-        averages["6hr"] = reverseHistory.slice(0,6).reduce((a, b) => a+b) / 6;
-        averages["24hr"] = reverseHistory.slice(0,24).reduce((a, b) => a+b) / 24;
+        console.log(miner.ip)
+        console.log(miner.history.data.History);
+        console.log(reverseHistory);
+        if (reverseHistory.length >= 1){
+            try {
+                averages["1hr"].hashrate = reverseHistory[0];
+                averages["1hr"].valid = true;
+            } catch (e) {
+                console.log(e);
+            }
+        }
+        if (reverseHistory.length >= 6){
+            console.log(reverseHistory.slice(0,6).reduce((a,b) => a+b));
+            try {
+                averages["6hr"].hashrate = reverseHistory.slice(0,6).reduce((a,b) => a+b) / 6;
+                averages["6hr"].valid = true;
+            } catch (e) {
+                console.log(e);
+            }
+        }
+        if (reverseHistory.length >= 24){
+            try {
+                averages["24hr"].hashrate = reverseHistory.slice(0,24).reduce((a,b) => a+b) / 24;
+                averages["24hr"].valid = true;
+            } catch (e) {
+                console.log(e);
+            }
+        }
     }
+    console.log(averages);
     return averages;
 }
 
