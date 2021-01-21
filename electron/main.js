@@ -214,7 +214,13 @@ let summaryTimer = setInterval(()=>{
                                 "Hashrate": response.body["Session"]["LastAverageMHs"]['Hashrate'],
                                 "Timestamp": response.body['Session']['LastAverageMHs']['Timestamp']
                             });
-                            // miners[i].history.hourData = [];
+
+                            //trim to last 48 hours
+                            if (miners[i].history.data.History.length > 48 || true) {
+                                const oldHistory = miners[i].history.data.History;
+                                miners[i].history.data.History = oldHistory.slice(Math.max(oldHistory.length-48), 0);
+                            }
+
                         }
                     }
                 } catch (err) {
