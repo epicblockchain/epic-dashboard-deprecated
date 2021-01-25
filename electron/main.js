@@ -198,14 +198,6 @@ let summaryTimer = setInterval(()=>{
                     miners[i].summary.status = 'completed';
                     //store some historical data
                     if (miners[i].history.status = 'completed') {
-                        if (!miners[i].history.hourData){
-                            miners[i].history.hourData = [];
-                        }
-                        miners[i].history.hourData.push({
-                            "Hashrate": response.body["Session"]["Average MHs"],
-                            "Timestamp": Math.round(Math.round(Date.now() / 1000)/5)*5
-                        });
-
                         if (miners[i].rebooting
                             && ( Date.now() - miners[i].rebootTime > 30000) // must have been 30 seconds since starting the reboot to unreboot
                         ){
@@ -222,7 +214,13 @@ let summaryTimer = setInterval(()=>{
                                 "Hashrate": response.body["Session"]["LastAverageMHs"]['Hashrate'],
                                 "Timestamp": response.body['Session']['LastAverageMHs']['Timestamp']
                             });
-                            miners[i].history.hourData = [];
+
+                            //trim to last 48 hours
+                            if (miners[i].history.data.History.length > 48 || true) {
+                                const oldHistory = miners[i].history.data.History;
+                                miners[i].history.data.History = oldHistory.slice(Math.max(oldHistory.length-48), 0);
+                            }
+
                         }
                     }
                 } catch (err) {
@@ -248,7 +246,7 @@ let historyTimer = setInterval(()=>{
                     const response = await got('http://' + miners[i].ip + '/history', {
                         responseType: 'json',
                         timeout: 5000
-                    })
+                    });
                     miners[i].history.data = response.body;
                     miners[i].history.status = 'completed';
                     if (response.body['History'].length){
@@ -265,6 +263,72 @@ let historyTimer = setInterval(()=>{
         }
     }
 }, intervalTimeHistory);
+
+function calculateAverages(miner){
+    let averages = {
+        "15min": {
+            hashrate: 0,
+            valid: false
+        },
+        "1hr": {
+            hashrate: 0,
+            valid: false
+        },
+        "6hr": {
+            hashrate: 0,
+            valid: false
+        },
+        "24hr": {
+            hashrate: 0,
+            valid: false
+        }
+    }
+    if (miner.summary.status === 'completed'){
+        try {
+            averages["15min"].hashrate = miner.summary.data["Session"]["Average MHs"];
+            averages["15min"].valid = true;
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    if (miner.history.status === 'completed'){
+        const historyClone = miner.history.data.History.map(el => {
+            return el.Hashrate;
+        });
+        //24 elements from the back in reverse, a better way might be to use the timestamp on the history object
+        const reverseHistory = historyClone.reverse().slice(0, 24);
+        console.log(miner.ip)
+        console.log(miner.history.data.History);
+        console.log(reverseHistory);
+        if (reverseHistory.length >= 1){
+            try {
+                averages["1hr"].hashrate = reverseHistory[0];
+                averages["1hr"].valid = true;
+            } catch (e) {
+                console.log(e);
+            }
+        }
+        if (reverseHistory.length >= 6){
+            console.log(reverseHistory.slice(0,6).reduce((a,b) => a+b));
+            try {
+                averages["6hr"].hashrate = reverseHistory.slice(0,6).reduce((a,b) => a+b) / 6;
+                averages["6hr"].valid = true;
+            } catch (e) {
+                console.log(e);
+            }
+        }
+        if (reverseHistory.length >= 24){
+            try {
+                averages["24hr"].hashrate = reverseHistory.slice(0,24).reduce((a,b) => a+b) / 24;
+                averages["24hr"].valid = true;
+            } catch (e) {
+                console.log(e);
+            }
+        }
+    }
+    console.log(averages);
+    return averages;
+}
 
 //dashboard
 
@@ -362,25 +426,6 @@ function getChartData() {
             hashrate: chartDataObj[prop] / 1000000
         })
     }
-    //append instantaneous data
-    chartDataObj = {};
-    miners.forEach(miner=>{
-        if (miner.history.hourData) {
-            miner.history.hourData.forEach((el)=>{
-                if (!(el.Timestamp in chartDataObj)){
-                    chartDataObj[el.Timestamp] = el.Hashrate;
-                } else {
-                    chartDataObj[el.Timestamp] += el.Hashrate;
-                }
-            });
-        }
-    });
-    for (const prop in chartDataObj) {
-        chartData.push({
-            time: new Date(prop * 1000),
-            hashrate: chartDataObj[prop] / 1000000
-        })
-    }
     return chartData;
 }
 
@@ -397,7 +442,8 @@ ipcMain.on('get-table', (event, arg) => {
         return {
             ip: miner.ip,
             summary: miner.summary,
-            rebooting: miner.rebooting || false
+            rebooting: miner.rebooting || false,
+            averageHRs: calculateAverages(miner)
         }
     }));
 });
@@ -546,6 +592,7 @@ ipcMain.on('remove-miners', (event, arg) => {
             message: 'Removed ' + removedIP + ' from the dashboard'
         });
     });
+    saveMiners();
 })
 
 function successMessageFromEndpoint(endpoint, ip){
@@ -769,6 +816,12 @@ ipcMain.on('post-settings', (event, arg) => {
 })
 
 function sendData(){
+    //handle a race condition with the window closing and still trying to send data to it
+    if (mainWindow.webContents === null){
+        console.log('trying to send data when webcontents has closed or has not been init');
+        return;
+    }
+
     if ( (listenerType === 'loading' || listenerType === 'table') && miners.length) {
         mainWindow.webContents.send('stop-loading')
     } else if (listenerType === 'dashboard') {
@@ -791,7 +844,8 @@ function sendData(){
         return {
             ip: miner.ip,
             summary: miner.summary,
-            rebooting: miner.rebooting || false
+            rebooting: miner.rebooting || false,
+            averageHRs: calculateAverages(miner)
         }
     }));
 }
