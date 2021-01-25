@@ -309,7 +309,7 @@ function calculateAverages(miner){
             }
         }
         if (reverseHistory.length >= 6){
-            console.log(reverseHistory.slice(0,6).reduce((a,b) => a+b));
+            // console.log(reverseHistory.slice(0,6).reduce((a,b) => a+b));
             try {
                 averages["6hr"].hashrate = reverseHistory.slice(0,6).reduce((a,b) => a+b) / 6;
                 averages["6hr"].valid = true;
