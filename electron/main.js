@@ -291,15 +291,20 @@ function calculateAverages(miner){
             console.log(e);
         }
     }
-    if (miner.history.status === 'completed'){
-        const historyClone = miner.history.data.History.map(el => {
-            return el.Hashrate;
-        });
-        //24 elements from the back in reverse, a better way might be to use the timestamp on the history object
-        const reverseHistory = historyClone.reverse().slice(0, 24);
-        // console.log(miner.ip)
-        // console.log(miner.history.data.History);
-        // console.log(reverseHistory);
+    if (miner.history.status === 'completed' && miner.history.length > 0){
+        try {
+            const historyClone = miner.history.data.History.map(el => {
+                return el.Hashrate;
+            });
+            //24 elements from the back in reverse, a better way might be to use the timestamp on the history object
+            const reverseHistory = historyClone.reverse().slice(0, 24);
+            // console.log(miner.ip)
+            // console.log(miner.history.data.History);
+            // console.log(reverseHistory);
+        } catch (e) {
+            console.log(e);
+            return averages;
+        }
         if (reverseHistory.length >= 1){
             try {
                 averages["1hr"].hashrate = reverseHistory[0];
