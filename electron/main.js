@@ -297,9 +297,9 @@ function calculateAverages(miner){
         });
         //24 elements from the back in reverse, a better way might be to use the timestamp on the history object
         const reverseHistory = historyClone.reverse().slice(0, 24);
-        console.log(miner.ip)
-        console.log(miner.history.data.History);
-        console.log(reverseHistory);
+        // console.log(miner.ip)
+        // console.log(miner.history.data.History);
+        // console.log(reverseHistory);
         if (reverseHistory.length >= 1){
             try {
                 averages["1hr"].hashrate = reverseHistory[0];
@@ -326,7 +326,7 @@ function calculateAverages(miner){
             }
         }
     }
-    console.log(averages);
+    // console.log(averages);
     return averages;
 }
 
