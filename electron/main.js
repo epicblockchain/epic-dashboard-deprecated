@@ -291,16 +291,14 @@ function calculateAverages(miner){
             console.log(e);
         }
     }
-    if (miner.history.status === 'completed' && miner.history.length > 0){
+    if (miner.history.status === 'completed' && miner.history.data.History.length > 0){
+        let reverseHistory = null;
         try {
             const historyClone = miner.history.data.History.map(el => {
                 return el.Hashrate;
             });
             //24 elements from the back in reverse, a better way might be to use the timestamp on the history object
-            const reverseHistory = historyClone.reverse().slice(0, 24);
-            // console.log(miner.ip)
-            // console.log(miner.history.data.History);
-            // console.log(reverseHistory);
+            reverseHistory = historyClone.reverse().slice(0, 24);
         } catch (e) {
             console.log(e);
             return averages;
@@ -314,7 +312,6 @@ function calculateAverages(miner){
             }
         }
         if (reverseHistory.length >= 6){
-            // console.log(reverseHistory.slice(0,6).reduce((a,b) => a+b));
             try {
                 averages["6hr"].hashrate = reverseHistory.slice(0,6).reduce((a,b) => a+b) / 6;
                 averages["6hr"].valid = true;
@@ -331,7 +328,6 @@ function calculateAverages(miner){
             }
         }
     }
-    // console.log(averages);
     return averages;
 }
 
