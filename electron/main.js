@@ -291,7 +291,7 @@ function calculateAverages(miner){
             console.log(e);
         }
     }
-    if (miner.history.status === 'completed' && miner.history.data.History.length > 0){
+    if (miner && (miner.history.status === 'completed' && miner.history.data.History.length > 0)){
         let reverseHistory = null;
         try {
             const historyClone = miner.history.data.History.map(el => {
