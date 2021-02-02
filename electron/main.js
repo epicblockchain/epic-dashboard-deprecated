@@ -291,7 +291,16 @@ function calculateAverages(miner){
             console.log(e);
         }
     }
-    if (miner && (miner.history.status === 'completed' && miner.history.data.History.length > 0)){
+    
+    let minerHistoryLength = null;
+    try {
+        minerHistoryLength = miner.history.data.History.length
+    } catch (e) {
+        console.log('Caught null history error in calculateAverages');
+        return averages;
+    }
+
+    if (miner && (miner.history.status === 'completed' && minerHistoryLength > 0)){
         let reverseHistory = null;
         try {
             const historyClone = miner.history.data.History.map(el => {
