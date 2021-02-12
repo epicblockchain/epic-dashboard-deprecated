@@ -296,7 +296,6 @@ function calculateAverages(miner){
     try {
         minerHistoryLength = miner.history.data.History.length
     } catch (e) {
-        console.log('Caught null history error in calculateAverages');
         return averages;
     }
 
