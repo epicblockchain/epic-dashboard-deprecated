@@ -181,11 +181,48 @@ function createWindow() {
 }
 app.on('ready', createWindow);
 
+function getBlackListedHostnames(){
+    let data;
+    try {
+        data = fs.readFileSync(path.join(getAppDataPath(), 'blacklist_hostnames.txt'));
+    } catch (err) {
+        console.log('no blacklist_hostnames.txt found');
+        return
+    }
+    const fileData = data.toString()
+    const hostnames = fileData.split('\n').slice(0, -1)
+    return hostnames;
+}
+
+function removeBlackListedHostnames(){
+    let data;
+    try {
+        data = fs.readFileSync(path.join(getAppDataPath(), 'blacklist_hostnames.txt'));
+    } catch (err) {
+        console.log('no blacklist_hostnames.txt found');
+        return
+    }
+    const fileData = data.toString()
+    const hostnames = fileData.split('\n').slice(0, -1)
+    miners = miners.filter(m => {
+        if (m.summary.status === 'empty') {
+            return true;
+        }
+        if (hostnames.includes(m.summary.data.Hostname)) {
+            return false;
+        } else {
+            return true;
+        }
+    });
+}
 
 let intervalTime = 5000;
 let intervalTimeHistory = 5000;
 //Accessing miner api
 let summaryTimer = setInterval(()=>{
+    //remove blacklisted miners
+    removeBlackListedHostnames();
+    //continue
     const len = miners.length;
     for (let i = 0; i < len; i++) {
         (async ()=>{
@@ -235,6 +272,7 @@ let summaryTimer = setInterval(()=>{
                 }
         })();
     }
+
 }, intervalTime)
 
 let historyTimer = setInterval(()=>{
@@ -447,14 +485,17 @@ ipcMain.on('get-chart', (event, arg) => {
 //table
 ipcMain.on('get-table', (event, arg) => {
     listenerType = 'table';
-    event.reply('get-table-reply', miners.map(miner => {
-        return {
-            ip: miner.ip,
-            summary: miner.summary,
-            rebooting: miner.rebooting || false,
-            averageHRs: calculateAverages(miner)
-        }
-    }));
+    event.reply('get-table-reply', {
+        minerData: miners.map(miner => {
+                return {
+                    ip: miner.ip,
+                    summary: miner.summary,
+                    rebooting: miner.rebooting || false,
+                    averageHRs: calculateAverages(miner)
+                }
+            }),
+        blacklist: getBlackListedHostnames()
+    });
 });
 
 //settings
@@ -849,14 +890,17 @@ function sendData(){
     }
     //always send table data now since we had to hack persistnce
     //todo: fix performance
-    mainWindow.webContents.send('get-table-reply', miners.map(miner => {
-        return {
-            ip: miner.ip,
-            summary: miner.summary,
-            rebooting: miner.rebooting || false,
-            averageHRs: calculateAverages(miner)
-        }
-    }));
+    mainWindow.webContents.send('get-table-reply', {
+            minerData: miners.map(miner => {
+                    return {
+                        ip: miner.ip,
+                        summary: miner.summary,
+                        rebooting: miner.rebooting || false,
+                        averageHRs: calculateAverages(miner)
+                    }
+                }),
+            blacklist: getBlackListedHostnames()
+    });
 }
 
 ipcMain.on('data-dump', () => {

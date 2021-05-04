@@ -335,11 +335,12 @@ class TablePage extends React.Component {
     }
 
     tableGetterHandler(event, args){
+        console.log(args)
         const currentIps = this.state.miners.map(m => {
             return m.ip;
         });
         let newMiners = this.state.miners;
-        args.forEach(newMiner => {
+        args.minerData.forEach(newMiner => {
             const idx = currentIps.findIndex((ip) => ip === newMiner.ip);
             if (idx === -1){
                 //append and default to visible
@@ -351,8 +352,16 @@ class TablePage extends React.Component {
                 newMiners[idx] = newMiner;
                 newMiners[idx].visible = oldVisible;
             }
-        })
-        
+            console.log(newMiner);
+            try {
+                if (args.blacklist.includes(newMiner.summary.data.Hostname)){
+                    newMiner.visible = false;
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        });
+
         this.setState({miners: newMiners})
     }
 
