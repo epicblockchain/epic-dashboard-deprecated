@@ -205,12 +205,16 @@ function removeBlackListedHostnames(){
     const fileData = data.toString()
     const hostnames = fileData.split('\n').slice(0, -1)
     miners = miners.filter(m => {
-        if (m.summary.status === 'empty') {
-            return true;
-        }
-        if (hostnames.includes(m.summary.data.Hostname)) {
-            return false;
-        } else {
+        try {
+            if (m.summary.status === 'empty') {
+                return true;
+            }
+            if (hostnames.includes(m.summary.data.Hostname)) {
+                return false;
+            } else {
+                return true;
+            }
+        } catch (err) {
             return true;
         }
     });
