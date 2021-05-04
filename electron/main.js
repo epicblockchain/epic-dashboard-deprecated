@@ -501,14 +501,17 @@ ipcMain.on('get-table', (event, arg) => {
 //settings
 ipcMain.on('get-settings', (event, arg) => {
     listenerType = 'settings'
-    event.reply('get-settings-reply', miners.map(miner => {
-        return {
-            ip: miner.ip,
-            summary: miner.summary,
-            rebooting: miner.rebooting || false
-        }
-    }));
-})
+    event.reply('get-settings-reply', {
+        minerData: miners.map(miner => {
+                return {
+                    ip: miner.ip,
+                    summary: miner.summary,
+                    rebooting: miner.rebooting || false
+                }
+            }),
+        blacklist: getBlackListedHostnames()
+    });
+});
 
 function getAppDataPath() {
     switch (process.platform) {
@@ -880,13 +883,16 @@ function sendData(){
         //chart doesnt need to be updated(or at least not very often) to maintain scrollbar
         //mainWindow.webContents.send('get-chart-reply', getChartData());
     } else if (listenerType === 'settings') {
-        mainWindow.webContents.send('get-settings-reply', miners.map(miner => {
-            return {
-                ip: miner.ip,
-                summary: miner.summary,
-                rebooting: miner.rebooting || false
-            }
-        }))
+        mainWindow.webContents.send('get-settings-reply', {
+            minerData: miners.map(miner => {
+                    return {
+                        ip: miner.ip,
+                        summary: miner.summary,
+                        rebooting: miner.rebooting || false
+                    }
+                }),
+            blacklist: getBlackListedHostnames()
+        });
     }
     //always send table data now since we had to hack persistnce
     //todo: fix performance

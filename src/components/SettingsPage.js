@@ -307,7 +307,7 @@ class SettingsPage extends React.Component {
             return m.ip;
         });
         let newMiners = this.state.miners;
-        args.forEach(newMiner => {
+        args.minerData.forEach(newMiner => {
             const idx = currentIps.findIndex((ip) => ip === newMiner.ip);
             if (idx === -1){
                 newMiner.isChecked = false;
@@ -319,6 +319,13 @@ class SettingsPage extends React.Component {
                 const oldVisibility = newMiners[idx].visible;
                 newMiners[idx] = newMiner;
                 newMiners[idx].visible = oldVisibility;
+            }
+            try {
+                if (args.blacklist.includes(newMiner.summary.data.Hostname)){
+                    newMiner.visible = false;
+                }
+            } catch (err) {
+                console.log(err);
             }
         });
         this.setState({miners: newMiners});
