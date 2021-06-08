@@ -1,0 +1,43 @@
+@media (min-width: 600px) {
+    button.MuiTab-root {
+        min-width: 0;
+    }
+    #minerTab {
+        min-width: 140px;
+    }
+}
+
+.MuiFormControl-root {
+    margin-right: 12px !important; 
+}
+
+#table .MuiButton-contained {
+    line-height: 2;
+    margin: 8px 12px 4px 0;
+}
+
+.MuiInputAdornment-root button {
+    margin: 0;
+}
+
+.period {
+    display: inline-block;
+    margin: 8px 1px 4px 1px;
+    padding: 15px 0 6px 0;
+    line-height: 1.1876em;
+}
+
+.wallet {
+    margin-right: 0 !important;
+    width: 100%;
+    max-width: 400px;
+}
+
+.pool {
+    width: 100%;
+    max-width: 400px;
+}
+
+.stratum {
+    height: 40px;
+}
